@@ -21,8 +21,8 @@ A Random Forest reduces variance by averaging many de-correlated trees. Each tre
 | Base learner | Single tree | Many trees (ensemble) |
 | Training data | Full dataset | Bootstrap sample per tree (sampling with replacement) |
 | Feature use at split | All features considered | Random subset of features at each split (feature subsampling) |
-| Variance | High | Much lower (averaging) |
-| Bias | Low–moderate | Slightly higher than a single fully grown tree (due to randomness) |
+| Variance (Overfitting) | High | Much lower (averaging) |
+| Bias (Underfitting) | Low–moderate | Slightly higher than a single fully grown tree (due to randomness) |
 | Interpretability | High | Low for entire forest (individual trees still interpretable) |
 | Overfitting tendency | High if grown deep | Greatly reduced |
 | Prediction (classification) | Leaf majority class | Majority vote across trees |
