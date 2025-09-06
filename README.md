@@ -1,1 +1,1 @@
-# randon-forest-algorithm
+# random-forest-algorithm
