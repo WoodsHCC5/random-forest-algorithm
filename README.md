@@ -236,3 +236,50 @@ Random Forest (Regression):
 ## Summary
 
 Random Forest = Many high-variance trees + diversity mechanisms (bootstrap + random feature subsets) + aggregation → Lower variance, strong generalization, minimal tuning. Decision trees are the interpretable core model; random forests industrialize them into a powerful ensemble.
+
+### How can bias be higher in a Random Forest than in a single Decision Tree?
+
+Bias = systematic difference between the expected model prediction and the true target function. A fully grown decision tree (no pruning, all features available at every split, trained on the entire dataset) tends to have very low bias because it can carve out extremely fine partitions (often to pure leaves). A Random Forest can introduce a *slight* increase in bias relative to that single best-fit deep tree due to its injected randomness:
+
+#### Sources of Additional Bias in Random Forests
+1. Bootstrap Sampling  
+   Each tree sees on average only about 63% of unique training samples (the rest are out-of-bag). With fewer effective samples per tree, some splits are less precise; individually, trees are a bit more biased than a tree trained on the full dataset. Averaging reduces variance but cannot fully remove that per-tree underfitting signal.
+
+2. Random Feature Subsets (m_try)  
+   At a node the best global split (using all features) might not be considered if the informative feature is absent from the sampled subset. The chosen split is then a second-best surrogate, slightly degrading the decision boundary. Repeating this over many levels pushes the expected tree structure toward a smoother, less sharply aligned boundary → mild bias increase.
+
+3. Strong Dominant Predictor Scenario  
+   Suppose one feature almost fully determines the label.  
+   - Single tree: uses it at the root → near-optimal partition.  
+   - Random forest with small m_try: many trees cannot use that feature at the root; they rely on weaker features first, producing weaker partitions; the ensemble average blends optimal and suboptimal partitions → boundary shifts, increasing bias near the decision frontier.
+
+4. Required Depth vs Imposed Regularization  
+   If you also set constraints (max_depth, min_samples_leaf, min_impurity_decrease), every tree is further regularized. Averaging cannot restore lost structure; bias compounds.
+
+5. Smoothing Effect of Averaging  
+   For classification, averaging posterior class probabilities over many “jagged” trees produces a smoother probability surface. This is good for variance reduction but can slightly underfit highly intricate true decision boundaries. For regression, averaging piecewise-constant leaf means produces shrinkage toward local means (akin to a kernel smoother), which can raise bias if the true function has sharp discontinuities.
+
+#### When the Bias Increase Is Noticeable
+- Very small m_try relative to p (e.g., m_try=1 when one dominant feature exists).
+- Very small datasets (bootstrap fragmentation hurts split reliability).
+- Heavy regularization + randomness simultaneously.
+- Targets with sharp step changes or rare, narrow interaction regions.
+
+#### Why It Is Usually Acceptable
+The variance reduction is typically far larger than the modest bias increase, so total generalization error (Bias² + Variance + Noise) decreases. This is why Random Forests outperform a single deep tree in most practical settings.
+
+#### Conceptual Decomposition
+Let T be the number of trees and R the algorithmic randomness. Expected Random Forest predictor:
+E_RF[f̂(x)] = E_{R, bootstrap}( (1/T) Σ f̂_t(x) )
+Bias_RF(x) = E_RF[f̂(x)] − f(x)
+Randomization moves E_RF[f̂(x)] slightly toward a smoothed version of an optimal deep tree’s prediction.
+
+#### Mitigating Excess Bias (if it appears)
+- Increase m_try (closer to p) when one or few features dominate.
+- Increase number of trees (indirectly stabilizes, though it does not change bias once expectation stabilized; it just reduces Monte Carlo error).
+- Allow deeper trees (raise max_depth / lower min_samples_leaf).
+- Use Extremely Randomized Trees (Extra Trees) only if variance still dominates; note they can increase bias further—so avoid if bias is already the issue.
+- For regression with sharp discontinuities, consider Gradient Boosting or specialized models if RF smoothing is too strong.
+
+#### Quick Takeaway
+Random Forests trade a small increase in bias (due to bootstrap + feature subsampling + smoothing) for a large decrease in variance. The net effect is almost always positive, but in edge cases with a single overwhelmingly predictive feature or extremely small data, a single deep tree (or higher m_try) can exhibit lower bias.
