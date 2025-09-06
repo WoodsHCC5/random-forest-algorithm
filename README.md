@@ -244,42 +244,63 @@ Bias = systematic difference between the expected model prediction and the true 
 #### Sources of Additional Bias in Random Forests
 1. Bootstrap Sampling  
    Each tree sees on average only about 63% of unique training samples (the rest are out-of-bag). With fewer effective samples per tree, some splits are less precise; individually, trees are a bit more biased than a tree trained on the full dataset. Averaging reduces variance but cannot fully remove that per-tree underfitting signal.
-
 2. Random Feature Subsets (m_try)  
    At a node the best global split (using all features) might not be considered if the informative feature is absent from the sampled subset. The chosen split is then a second-best surrogate, slightly degrading the decision boundary. Repeating this over many levels pushes the expected tree structure toward a smoother, less sharply aligned boundary → mild bias increase.
-
 3. Strong Dominant Predictor Scenario  
-   Suppose one feature almost fully determines the label.  
-   - Single tree: uses it at the root → near-optimal partition.  
-   - Random forest with small m_try: many trees cannot use that feature at the root; they rely on weaker features first, producing weaker partitions; the ensemble average blends optimal and suboptimal partitions → boundary shifts, increasing bias near the decision frontier.
-
-4. Required Depth vs Imposed Regularization  
-   If you also set constraints (max_depth, min_samples_leaf, min_impurity_decrease), every tree is further regularized. Averaging cannot restore lost structure; bias compounds.
-
+   Single tree: uses dominant feature at root → near-optimal partition.  
+   Random forest with small m_try: many trees cannot use that feature first → blended weaker partitions shift boundary.
+4. Depth Constraints + Randomness  
+   Additional regularization (max_depth, min_samples_leaf) compounds bias. Randomness cannot recover lost structure.
 5. Smoothing Effect of Averaging  
-   For classification, averaging posterior class probabilities over many “jagged” trees produces a smoother probability surface. This is good for variance reduction but can slightly underfit highly intricate true decision boundaries. For regression, averaging piecewise-constant leaf means produces shrinkage toward local means (akin to a kernel smoother), which can raise bias if the true function has sharp discontinuities.
+   Probability or regression surfaces become smoother (good for variance) but can underfit sharp boundaries.
 
 #### When the Bias Increase Is Noticeable
-- Very small m_try relative to p (e.g., m_try=1 when one dominant feature exists).
-- Very small datasets (bootstrap fragmentation hurts split reliability).
-- Heavy regularization + randomness simultaneously.
-- Targets with sharp step changes or rare, narrow interaction regions.
+- Very small m_try relative to p.
+- Very small datasets.
+- Heavy simultaneous regularization.
+- Targets with sharp discontinuities or very localized interactions.
 
 #### Why It Is Usually Acceptable
-The variance reduction is typically far larger than the modest bias increase, so total generalization error (Bias² + Variance + Noise) decreases. This is why Random Forests outperform a single deep tree in most practical settings.
+Variance reduction dominates; overall generalization error typically falls despite a small bias uptick.
 
-#### Conceptual Decomposition
-Let T be the number of trees and R the algorithmic randomness. Expected Random Forest predictor:
-E_RF[f̂(x)] = E_{R, bootstrap}( (1/T) Σ f̂_t(x) )
-Bias_RF(x) = E_RF[f̂(x)] − f(x)
-Randomization moves E_RF[f̂(x)] slightly toward a smoothed version of an optimal deep tree’s prediction.
+#### Mitigating Excess Bias
+- Increase m_try.
+- Allow deeper trees / smaller leaves.
+- Ensure enough trees (stabilize expectation).
+- Avoid Extra Trees if bias already problematic.
+- Consider boosting for extremely sharp functions.
 
-#### Mitigating Excess Bias (if it appears)
-- Increase m_try (closer to p) when one or few features dominate.
-- Increase number of trees (indirectly stabilizes, though it does not change bias once expectation stabilized; it just reduces Monte Carlo error).
-- Allow deeper trees (raise max_depth / lower min_samples_leaf).
-- Use Extremely Randomized Trees (Extra Trees) only if variance still dominates; note they can increase bias further—so avoid if bias is already the issue.
-- For regression with sharp discontinuities, consider Gradient Boosting or specialized models if RF smoothing is too strong.
+#### Takeaway
+Random Forests trade tiny bias increases for large variance reductions—net win in most real datasets.
 
-#### Quick Takeaway
-Random Forests trade a small increase in bias (due to bootstrap + feature subsampling + smoothing) for a large decrease in variance. The net effect is almost always positive, but in edge cases with a single overwhelmingly predictive feature or extremely small data, a single deep tree (or higher m_try) can exhibit lower bias.
+---
+
+## Bias vs Variance (Video)
+
+GitHub READMEs do not render YouTube iframes (they are stripped). Below you get:
+1. A clickable thumbnail (works everywhere).  
+2. An iframe embed (only works if this markdown is rendered in an environment that allows iframes, e.g. a generated site or certain markdown viewers).
+
+**Thumbnail (click to open video):**  
+[![Bias vs Variance Video](https://img.youtube.com/vi/tUs0fFo7ki8/hqdefault.jpg)](https://www.youtube.com/watch?v=tUs0fFo7ki8 "Bias vs Variance")
+
+<details open>
+<summary>Inline Embed (may NOT play inside GitHub repository view)</summary>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=tUs0fFo7ki8" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/tUs0fFo7ki8/hqdefault.jpg" alt="Bias vs Variance video thumbnail" width="480">
+  </a>
+</p>
+
+<!-- If your markdown renderer permits iframes (e.g., GitHub Pages/Jekyll site), this will show the playable video. -->
+<div align="center">
+  <iframe width="560" height="315"
+          src="https://www.youtube-nocookie.com/embed/tUs0fFo7ki8"
+          title="Bias vs Variance"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+  </iframe>
+</div>
+</details>
