@@ -277,9 +277,6 @@ Random Forests trade tiny bias increases for large variance reductions—net win
 
 ## Bias vs Variance (Video)
 
-GitHub READMEs do not render YouTube iframes (they are stripped). Below you get:
-1. A clickable thumbnail (works everywhere).  
-2. An iframe embed (only works if this markdown is rendered in an environment that allows iframes, e.g. a generated site or certain markdown viewers).
 
 **Thumbnail (click to open video):**  
 [![Bias vs Variance Video](https://img.youtube.com/vi/tUs0fFo7ki8/hqdefault.jpg)](https://www.youtube.com/watch?v=tUs0fFo7ki8 "Bias vs Variance")
@@ -293,14 +290,3 @@ GitHub READMEs do not render YouTube iframes (they are stripped). Below you get:
   </a>
 </p>
 
-<!-- If your markdown renderer permits iframes (e.g., GitHub Pages/Jekyll site), this will show the playable video. -->
-<div align="center">
-  <iframe width="560" height="315"
-          src="https://www.youtube-nocookie.com/embed/tUs0fFo7ki8"
-          title="Bias vs Variance"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen>
-  </iframe>
-</div>
-</details>
