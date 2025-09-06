@@ -280,13 +280,3 @@ Random Forests trade tiny bias increases for large variance reductions—net win
 
 **Thumbnail (click to open video):**  
 [![Bias vs Variance Video](https://img.youtube.com/vi/tUs0fFo7ki8/hqdefault.jpg)](https://www.youtube.com/watch?v=tUs0fFo7ki8 "Bias vs Variance")
-
-<details open>
-<summary>Inline Embed (may NOT play inside GitHub repository view)</summary>
-
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=tUs0fFo7ki8" target="_blank" rel="noopener">
-    <img src="https://img.youtube.com/vi/tUs0fFo7ki8/hqdefault.jpg" alt="Bias vs Variance video thumbnail" width="480">
-  </a>
-</p>
-
